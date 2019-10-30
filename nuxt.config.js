@@ -14,7 +14,11 @@ module.exports = {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    script: [
+      { src: '/box2d/Box2D_v2.2.1_min.js' },
+      { src: '/box2d/helpers/embox2d-html5canvas-debugDraw.js' }
+    ]
   },
   /*
    ** Customize the progress-bar color
@@ -25,9 +29,6 @@ module.exports = {
    */
   css: [
     "~/assets/css/main.css"
-  ],
-  scripts: [
-    '/box2d/Box2D_v2.2.1_min.js'
   ],
   /*
    ** Plugins to load before mounting the App

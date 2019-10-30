@@ -10,4 +10,5 @@ html, body {
 
 body {
   @apply text-indigo-darkest;
+  min-height: 100vh;
 }
