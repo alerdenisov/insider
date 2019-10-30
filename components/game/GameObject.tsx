@@ -1,9 +1,12 @@
-import { Component } from 'nuxt-property-decorator'
+import { Component, Prop } from 'nuxt-property-decorator'
 import { CreateElement } from 'vue'
 import { TsxComponent } from '~/types'
 import Engine from './World'
 
-interface GameObjectProps {}
+interface GameObjectProps {
+  x?: number
+  y?: number
+}
 
 @Component({
   name: 'e-object'
@@ -12,6 +15,19 @@ export default class GameObject<TProps = {}>
   extends TsxComponent<GameObjectProps & TProps>
   implements GameObjectProps {
   engine: Engine | null = null
+
+  @Prop({ default: 0 })
+  x!: number
+
+  @Prop({ default: 0 })
+  y!: number
+
+  get position() {
+    return {
+      x: this.x,
+      y: this.y
+    }
+  }
 
   findParent(node: Engine) {
     if (!!node.world) {
