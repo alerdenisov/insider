@@ -1,6 +1,3 @@
-window.onload = function () {
-    using(Box2D(), "bc.+")
-}
 
 //Having to type 'Box2D.' in front of everything makes porting
 //existing C++ code a pain in the butt. This function can be used
@@ -25,10 +22,16 @@ function using(ns, pattern) {
     }
 }
 
+var e_shapeBit = 0x0001;
+var e_jointBit = 0x0002;
+var e_aabbBit = 0x0004;
+var e_pairBit = 0x0008;
+var e_centerOfMassBit = 0x0010;
+
 
 //to replace original C++ operator =
 function copyVec2(vec) {
-    return new Box2D.b2Vec2(vec.get_x(), vec.get_y());
+    return new b2Vec2(vec.get_x(), vec.get_y());
 }
 
 //to replace original C++ operator * (float)
@@ -39,13 +42,13 @@ function scaleVec2(vec, scale) {
 
 //to replace original C++ operator *= (float)
 function scaledVec2(vec, scale) {
-    return new Box2D.b2Vec2(scale * vec.get_x(), scale * vec.get_y());
+    return new b2Vec2(scale * vec.get_x(), scale * vec.get_y());
 }
 
 
 // http://stackoverflow.com/questions/12792486/emscripten-bindings-how-to-create-an-accessible-c-c-array-from-javascript
 function createChainShape(vertices, closedLoop) {
-    var shape = new Box2D.b2ChainShape();
+    var shape = new b2ChainShape();
     var buffer = Box2D.allocate(vertices.length * 8, 'float', Box2D.ALLOC_STACK);
     var offset = 0;
     for (var i = 0; i < vertices.length; i++) {
@@ -62,7 +65,7 @@ function createChainShape(vertices, closedLoop) {
 }
 
 function createPolygonShape(vertices) {
-    var shape = new Box2D.b2PolygonShape();
+    var shape = new b2PolygonShape();
     var buffer = Box2D.allocate(vertices.length * 8, 'float', Box2D.ALLOC_STACK);
     var offset = 0;
     for (var i = 0; i < vertices.length; i++) {
@@ -75,13 +78,22 @@ function createPolygonShape(vertices) {
     return shape;
 }
 
+function createTrianglePolygonShape(radius) {
+    numVerts = 3;
+    var verts = [];
+    for (var i = 0; i < numVerts; i++) {
+        var angle = i / numVerts * 360.0 * 0.0174532925199432957;
+        verts.push(new b2Vec2(radius * Math.sin(angle), radius * -Math.cos(angle)));
+    }
+    return createPolygonShape(verts);
+}
 function createRandomPolygonShape(radius) {
     var numVerts = 3.5 + Math.random() * 5;
     numVerts = numVerts | 0;
     var verts = [];
     for (var i = 0; i < numVerts; i++) {
         var angle = i / numVerts * 360.0 * 0.0174532925199432957;
-        verts.push(new Box2D.b2Vec2(radius * Math.sin(angle), radius * -Math.cos(angle)));
+        verts.push(new b2Vec2(radius * Math.sin(angle), radius * -Math.cos(angle)));
     }
     return createPolygonShape(verts);
 }

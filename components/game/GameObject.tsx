@@ -44,5 +44,5 @@ export default class GameObject<TProps = {}>
 
   destroy() {}
   start() {}
-  update() {}
+  update(dt: number) {}
 }

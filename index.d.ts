@@ -18,6 +18,7 @@ declare global {
   function scaledVec2(vec, scale)
   function createChainShape(vertices, closedLoop)
   function createPolygonShape(vertices)
+  function createTrianglePolygonShape(r)
   function createRandomPolygonShape(radius)
 
   namespace Box2D {

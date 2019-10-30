@@ -2,20 +2,6 @@ import { Component, Prop, Watch } from 'nuxt-property-decorator'
 import { CreateElement } from 'vue'
 import { TsxComponent } from '~/types'
 import GameObject from './GameObject'
-import { on } from 'cluster'
-
-const requestAnimFrame = (function() {
-  return (
-    window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window['mozRequestAnimationFrame'] ||
-    window['oRequestAnimationFrame'] ||
-    window['msRequestAnimationFrame'] ||
-    function(callback) {
-      window.setTimeout(callback, 1000 / 60)
-    }
-  )
-})()
 
 const e_shapeBit = 0x0001
 const e_jointBit = 0x0002
@@ -81,7 +67,6 @@ export default class World extends TsxComponent<WorldProps>
     // const Box2D = Box2D || {}
     if (this.box2d) {
       this.init()
-      this.update()
     }
   }
 
@@ -93,17 +78,16 @@ export default class World extends TsxComponent<WorldProps>
     this.canvas = this.$refs['canvas'] as HTMLCanvasElement
     this.context = this.canvas.getContext('2d')!
 
-    const bubbleUp = (evt: string) =>
-      this.canvas.addEventListener(evt.toLowerCase(), (e) => this.$emit(evt, e))
+    // const bubbleUp = (evt: string) =>
+    //   this.canvas.addEventListener(evt, (e) => this.$emit(evt, e))
 
-    bubbleUp('mouseMove')
-    bubbleUp('mouseDown')
-    bubbleUp('mouseUp')
-    bubbleUp('mouseOut')
-    bubbleUp('keyDown')
-    bubbleUp('keyUp')
+    // bubbleUp('mousemove')
+    // bubbleUp('mousedown')
+    // bubbleUp('mouseup')
+    // bubbleUp('mouseout')
+    // bubbleUp('keydown')
+    // bubbleUp('keyup')
 
-    console.log('context', this.context)
     this.debugDraw = getCanvasDebugDraw(this.context)
     this.debugDraw.SetFlags(
       e_shapeBit | e_aabbBit | e_centerOfMassBit | e_jointBit | e_pairBit
@@ -128,8 +112,7 @@ export default class World extends TsxComponent<WorldProps>
   createScene() {}
 
   register(obj: GameObject) {
-    console.log(obj)
-    const key = obj.$vnode.toString()
+    const key = obj['_uid']
     if (typeof this.objects[key] === 'undefined') {
       obj.start()
       this.$set(this.objects, key, obj)
@@ -137,7 +120,7 @@ export default class World extends TsxComponent<WorldProps>
   }
 
   unregister(obj: GameObject) {
-    const key = obj.$vnode.toString()
+    const key = obj['_uid']
     if (typeof this.objects[key] !== 'undefined') {
       obj.destroy()
       this.$delete(this.objects, key)
@@ -147,7 +130,6 @@ export default class World extends TsxComponent<WorldProps>
   @Watch('width')
   @Watch('height')
   resize() {
-    console.log('resize')
     this.canvas.width = this.width
     this.canvas.height = this.height
     this.canvasOffset.x = this.canvas!.width / 2
@@ -162,8 +144,8 @@ export default class World extends TsxComponent<WorldProps>
     this.context.save()
     this.context.translate(this.translate[0], this.translate[1])
     this.context.scale(1, -1)
-    this.context.scale(32, 32)
-    this.context.lineWidth /= 32
+    this.context.scale(12, 12)
+    this.context.lineWidth /= 12
 
     drawAxes(this.context)
     this.context.fillStyle = 'rgb(255,255,0)'
@@ -172,18 +154,17 @@ export default class World extends TsxComponent<WorldProps>
     this.context.restore()
   }
 
-  step() {
-    var current = Date.now()
-    this.world.Step(1 / 60, 3, 2)
-    this.frametime = Date.now() - current
+  step(dt: number) {
+    this.world.Step(dt / 1000, 3, 2)
+    this.frametime = dt
     this.frameTime60 = this.frameTime60 * (59 / 60) + this.frametime * (1 / 60)
   }
 
-  update() {
-    this.step()
+  update(dt: number) {
+    this.step(dt)
     this.draw()
 
-    requestAnimFrame(this.update.bind(this))
+    this.items.forEach((i) => i.update(dt))
   }
   render(h: CreateElement) {
     return (
