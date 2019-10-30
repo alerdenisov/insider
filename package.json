@@ -1,5 +1,5 @@
 {
-  "name": "insider-balance",  
+  "name": "insider-balance",
   "version": "1.0.0",
   "description": "Trial work",
   "config": {
@@ -30,6 +30,7 @@
     "vuex-persist": "2.1.1"
   },
   "devDependencies": {
+    "@creditkarma/thrift-typescript": "^3.7.6",
     "@nuxt/typescript-build": "0.3.2",
     "@nuxtjs/eslint-config": "1.0.1",
     "@nuxtjs/eslint-module": "1.0.0",

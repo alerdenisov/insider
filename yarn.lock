@@ -705,6 +705,22 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@creditkarma/thrift-parser@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@creditkarma/thrift-parser/-/thrift-parser-1.2.0.tgz#69b47dff3d2a5211e9417ff543ea65f681821906"
+  integrity sha512-mSRxjSXvU6sBfWhMBWXl7H/XEKWHQ7x+MUDLwyeFIwwX9UaZKPOc7TgGd0N78kcZtIMk82ArdxO6aFhqnBuNtg==
+
+"@creditkarma/thrift-typescript@^3.7.6":
+  version "3.7.6"
+  resolved "https://registry.yarnpkg.com/@creditkarma/thrift-typescript/-/thrift-typescript-3.7.6.tgz#3b83f125b3d6c40428726f3b1c180908aef46e35"
+  integrity sha512-v/9Bi3YqExw8bOHA1F/087zru14qExO1e4rdV/+hjYOnUk0HX3zmi6giu/QR9c9QK+5bxekZd4pUxgX7HWwvwQ==
+  dependencies:
+    "@creditkarma/thrift-parser" "^1.2.0"
+    "@types/fs-extra" "^7.0.0"
+    fs-extra "^8.0.1"
+    glob "^7.1.2"
+    typescript "3.5.x"
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
@@ -1289,6 +1305,13 @@
     "@types/body-parser" "*"
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
+
+"@types/fs-extra@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-7.0.0.tgz#9c4ad9e1339e7448a76698829def1f159c1b636c"
+  integrity sha512-ndoMMbGyuToTy4qB6Lex/inR98nPiNHacsgMPvy+zqMLgSxbt8VtWpDArpGp69h1fEDQHn1KB+9DWD++wgbwYA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/html-minifier@^3.5.3":
   version "3.5.3"
@@ -10179,6 +10202,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typescript@3.5.x:
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"
+  integrity sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==
 
 typescript@~3.6:
   version "3.6.4"

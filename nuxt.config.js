@@ -26,6 +26,9 @@ module.exports = {
   css: [
     "~/assets/css/main.css"
   ],
+  scripts: [
+    '/box2d/Box2D_v2.2.1_min.js'
+  ],
   /*
    ** Plugins to load before mounting the App
    */
@@ -41,7 +44,7 @@ module.exports = {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/pwa'],
+  // modules: ['@nuxtjs/pwa'],
   /*
    ** Build configuration
    */
