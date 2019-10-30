@@ -1,0 +1,13 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
+html, body {
+  @apply font-sans;
+  font-size: 100%;
+}
+
+body {
+  @apply text-indigo-darkest;
+}
