@@ -143,7 +143,6 @@ export default class PhysicObject<TProp = {}>
   }
 
   end() {
-    console.log('destroy body')
     this.engine!.world.DestroyBody(this.body)
   }
 }
