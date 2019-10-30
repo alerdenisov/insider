@@ -44,6 +44,7 @@ export default class Game extends Vue {
   left: 1 | 0 = 0
   right: 1 | 0 = 0
 
+  clear = false
   handleBody: any = null
 
   handleFloorContact(body) {
@@ -135,7 +136,9 @@ export default class Game extends Vue {
     this.score = 0
     const engine = this.$refs.engine as Engine
     this.boxes.splice(0, this.boxes.length)
-    this.$nextTick(() => engine.resetScene())
+
+    this.clear = true
+    this.$nextTick(() => (this.clear = false)) //engine.resetScene())
   }
 
   get view() {
@@ -165,38 +168,49 @@ export default class Game extends Vue {
           zoom={this.zoom}
           view={this.view}
         >
-          <Handle
-            width={16}
-            height={0.4}
-            y={4}
-            active
-            awake
-            density={5}
-            linearDamping={2}
-            angularDamping={2}
-            onEnable={(go) => (this.handleBody = (go as PhysicObject).body)}
-          />
-          {this.boxes.map((box) => (
-            <Box
-              key={box.id}
-              weight={box.w}
-              x={box.x}
-              y={box.y}
-              linearDamping={0.5}
-              density={0.7}
-              onEnable={this.injectBox(box.id).bind(this)}
+          {!this.clear && [
+            <Handle
+              width={16}
+              height={0.4}
+              y={4}
+              active
+              awake
+              density={5}
+              linearDamping={2}
+              angularDamping={2}
+              onEnable={(go) => (this.handleBody = (go as PhysicObject).body)}
+            />,
+            ...this.boxes.map((box) => (
+              <Box
+                key={box.id}
+                weight={box.w}
+                x={box.x}
+                y={box.y}
+                linearDamping={0.5}
+                density={0.7}
+                onEnable={this.injectBox(box.id).bind(this)}
+              />
+            )),
+            <Player
+              move={this.move}
+              ref="player"
+              density={5}
+              linearDamping={10}
+              angularDamping={10}
+              r={180}
+              awake
+              active
+            />,
+            <Floor
+              listen
+              active={true}
+              awake={false}
+              density={0}
+              x={0}
+              y={0}
+              onCollisionEnter={this.handleFloorContact.bind(this)}
             />
-          ))}
-          <Player move={this.move} ref="player" />
-          <Floor
-            listen
-            active={true}
-            awake={false}
-            density={0}
-            x={0}
-            y={0}
-            onCollisionEnter={this.handleFloorContact.bind(this)}
-          />
+          ]}
         </Engine>
       </div>
     )
