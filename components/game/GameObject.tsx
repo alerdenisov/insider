@@ -57,16 +57,15 @@ export default class GameObject<TProps = {}>
       this.engine = this.findParent(this.$parent as Engine)
       if (this.engine) {
         this.engine.register(this)
-        this.$emit('enable', this)
       }
+      this.$emit('enable', this)
     })
   }
-
   beforeDestroy() {
     if (this.engine) {
       this.engine.unregister(this)
-      this.$emit('disable', this)
     }
+    this.$emit('disable', this)
   }
 
   render(h: CreateElement) {
@@ -74,6 +73,14 @@ export default class GameObject<TProps = {}>
   }
 
   end() {}
+  _end() {
+    this.$emit('disable', this)
+    this.end()
+  }
   start() {}
+  _start() {
+    this.$emit('enable', this)
+    this.start()
+  }
   update(dt: number) {}
 }

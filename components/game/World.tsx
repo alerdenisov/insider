@@ -101,7 +101,7 @@ export default class Engine extends TsxComponent<EngineProps>
 
   resetScene() {
     this.createWorld()
-    this.items.forEach((i) => i.start())
+    this.items.forEach((i) => i._start())
   }
 
   createWorld() {
@@ -120,7 +120,7 @@ export default class Engine extends TsxComponent<EngineProps>
   register(obj: GameObject) {
     const key = obj['_uid']
     if (typeof this.objects[key] === 'undefined') {
-      obj.start()
+      obj._start()
       this.$set(this.objects, key, obj)
     }
   }
@@ -128,7 +128,7 @@ export default class Engine extends TsxComponent<EngineProps>
   unregister(obj: GameObject) {
     const key = obj['_uid']
     if (typeof this.objects[key] !== 'undefined') {
-      obj.end()
+      obj._end()
       this.$delete(this.objects, key)
     }
   }
@@ -144,7 +144,7 @@ export default class Engine extends TsxComponent<EngineProps>
 
   draw() {
     //black background
-    this.context.fillStyle = 'rgb(0,0,0)'
+    this.context.fillStyle = '#191e38'
     this.context.fillRect(0, 0, this.canvas.width, this.canvas.height)
 
     this.context.save()

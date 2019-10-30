@@ -9,7 +9,7 @@ html, body {
 }
 
 body {
-  @apply text-indigo-darkest;
+  @apply text-white bg-indigo-darkest;
   min-height: 100vh;
 }
 
@@ -19,7 +19,7 @@ body {
 .e-engine {}
 
 .e-scoreboard {
-  @apply absolute top-0 w-full text-center flex flex-col;
+  @apply absolute top-0 w-full text-center flex flex-col mt-l;
 
   &__current {
     @apply text-white text-xl3 font-semibold;
