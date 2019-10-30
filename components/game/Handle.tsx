@@ -1,53 +1,36 @@
 import { Component, Prop } from 'nuxt-property-decorator'
 import GameObject from './GameObject'
+import PhysicObject from './PhysicObject'
 
 interface HandleProps {
-  floorPtr: number
-  onCollide?: () => void
+  height?: number
+  width?: number
 }
 
 @Component({
   name: 'e-handle'
 })
-export default class Handle extends GameObject<HandleProps>
+export default class Handle extends PhysicObject<HandleProps>
   implements HandleProps {
   body: any = null
   shape: any = null
 
-  @Prop({ default: 0 })
-  floorPtr!: number
+  @Prop({ default: 15 })
+  width!: number
 
-  start() {
-    if (this.engine) {
-      this.shape = new Box2D.b2PolygonShape()
-      this.shape.SetAsBox(16, 0.3)
-      let bd = new Box2D.b2BodyDef()
-      bd.set_type(this.engine!.box2d.b2_dynamicBody)
-      bd.set_position(new Box2D.b2Vec2(0, 0))
-      const body = (this.body = this.engine!.world.CreateBody(bd))
+  @Prop({ default: 0.5 })
+  height!: number
 
-      body.CreateFixture(this.shape, 5.0)
-      body.SetLinearDamping(2)
-      body.SetAngularDamping(2)
-      body.SetTransform(new Box2D.b2Vec2(0, 4), 0.0)
-      body.SetLinearVelocity(new Box2D.b2Vec2(0, 0))
-      body.SetAwake(1)
-      body.SetActive(1)
-    }
+  buildBody() {
+    let bd = new Box2D.b2BodyDef()
+    bd.set_type(this.engine!.box2d.b2_dynamicBody)
+    return this.engine!.world.CreateBody(bd)
   }
 
-  update(dt: number) {
-    let edge = this.body.GetContactList()
-    while (edge.ptr > 0) {
-      if (edge.get_other().ptr === this.floorPtr) {
-        this.$emit('collide')
-        this.body.SetAwake(0)
-        this.body.SetActive(0)
-        return
-      }
-
-      edge = edge.get_next()
-    }
+  buildShape() {
+    this.shape = new Box2D.b2PolygonShape()
+    this.shape.SetAsBox(this.width, this.height)
+    return this.shape
   }
 }
 

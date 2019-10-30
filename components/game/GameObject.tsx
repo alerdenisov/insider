@@ -6,6 +6,10 @@ import Engine from './World'
 interface GameObjectProps {
   x?: number
   y?: number
+  r?: number
+
+  onEnable?: (obj: GameObject) => void
+  onDisable?: (obj: GameObject) => void
 }
 
 @Component({
@@ -17,10 +21,17 @@ export default class GameObject<TProps = {}>
   engine: Engine | null = null
 
   @Prop({ default: 0 })
+  r!: number
+
+  @Prop({ default: 0 })
   x!: number
 
   @Prop({ default: 0 })
   y!: number
+
+  get angle() {
+    return this.r * 0.0174532925199432957
+  }
 
   get position() {
     return {
@@ -46,20 +57,23 @@ export default class GameObject<TProps = {}>
       this.engine = this.findParent(this.$parent as Engine)
       if (this.engine) {
         this.engine.register(this)
+        this.$emit('enable', this)
       }
     })
   }
 
   beforeDestroy() {
-    console.log('destoying ' + this['_uid'])
-    if (this.engine) this.engine.unregister(this)
+    if (this.engine) {
+      this.engine.unregister(this)
+      this.$emit('disable', this)
+    }
   }
 
   render(h: CreateElement) {
     return <span />
   }
 
-  destroy() {}
+  end() {}
   start() {}
   update(dt: number) {}
 }

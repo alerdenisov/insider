@@ -128,7 +128,7 @@ export default class Engine extends TsxComponent<EngineProps>
   unregister(obj: GameObject) {
     const key = obj['_uid']
     if (typeof this.objects[key] !== 'undefined') {
-      obj.destroy()
+      obj.end()
       this.$delete(this.objects, key)
     }
   }

@@ -6,6 +6,8 @@ import Handle from '~/components/game/Handle'
 import Box from '~/components/game/Box'
 import Player from '~/components/game/Player'
 import Floor from '~/components/game/Floor'
+import PhysicObject from '~/components/game/PhysicObject'
+import GameObject from '~/components/game/GameObject'
 
 const requestAnimFrame = (function() {
   return (
@@ -32,7 +34,7 @@ enum Keys {
 export default class Game extends Vue {
   worldSize: { x: number; y: number } = { x: 0, y: 0 }
 
-  boxes: { id: string; w: number }[] = []
+  boxes: { id: string; w: number; x: number; y: number; go?: Box }[] = []
   current: number = Date.now()
 
   score: number = 0
@@ -42,7 +44,24 @@ export default class Game extends Vue {
   left: 1 | 0 = 0
   right: 1 | 0 = 0
 
-  floorPtr: number = 0
+  handleBody: any = null
+
+  handleFloorContact(body) {
+    if (body.ptr === this.handleBody.ptr) {
+      this.end()
+    }
+
+    for (let index = 0; index < this.boxes.length; index++) {
+      const box = this.boxes[index]
+      if (typeof box.go !== 'undefined' && typeof box.go.body !== 'undefined') {
+        if (box.go.body.ptr === body.ptr) {
+          console.log(box, box.go!.body!.ptr, body.ptr)
+          this.boxes.splice(index, 1)
+          index--
+        }
+      }
+    }
+  }
 
   get move(): -1 | 0 | 1 {
     return (-this.left + this.right) as any
@@ -70,7 +89,9 @@ export default class Game extends Vue {
         id: Math.random()
           .toString(32)
           .substr(2),
-        w: ~~(Math.random() * 300)
+        x: (1 - Math.random() * 2) * 16,
+        y: 15 + Math.random() * 10,
+        w: 1 + ~~(Math.random() * 10)
       })
 
       this.next = 1500 + Math.random() * 500
@@ -98,7 +119,6 @@ export default class Game extends Vue {
   }
 
   onPress(evt: KeyboardEvent) {
-    console.log(evt.key, evt.keyCode)
     switch (evt.keyCode) {
       case Keys.Left:
         this.left = 1
@@ -145,15 +165,50 @@ export default class Game extends Vue {
           zoom={this.zoom}
           view={this.view}
         >
-          <Handle floorPtr={this.floorPtr} onCollide={this.end.bind(this)} />
+          <Handle
+            width={16}
+            height={0.4}
+            y={4}
+            active
+            awake
+            density={5}
+            linearDamping={2}
+            angularDamping={2}
+            onEnable={(go) => (this.handleBody = (go as PhysicObject).body)}
+          />
           {this.boxes.map((box) => (
-            <Box key={box.id} weight={box.w} />
+            <Box
+              key={box.id}
+              weight={box.w}
+              x={box.x}
+              y={box.y}
+              linearDamping={0.5}
+              density={0.7}
+              onEnable={this.injectBox(box.id).bind(this)}
+            />
           ))}
           <Player move={this.move} ref="player" />
-          <Floor onBody={(ptr) => (this.floorPtr = ptr)} />
+          <Floor
+            listen
+            active={true}
+            awake={false}
+            density={0}
+            x={0}
+            y={0}
+            onCollisionEnter={this.handleFloorContact.bind(this)}
+          />
         </Engine>
       </div>
     )
+  }
+
+  injectBox(id: string) {
+    return (b) => {
+      const index = this.boxes.findIndex((b) => b.id === id)
+      if (index >= 0) {
+        this.$set(this.boxes, index, { ...this.boxes[index], go: b })
+      }
+    }
   }
 }
 

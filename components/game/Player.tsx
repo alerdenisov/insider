@@ -45,7 +45,6 @@ export default class Player extends GameObject<PlayerProps>
   }
 
   update(dt: number) {
-    console.log(this.move)
     if (this.move !== 0) {
       this.body.SetLinearVelocity(new Box2D.b2Vec2(this.move * this.speed, 0))
     }

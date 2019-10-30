@@ -1,28 +1,33 @@
-import { Component } from 'nuxt-property-decorator'
+import { Component, Prop } from 'nuxt-property-decorator'
 import GameObject from './GameObject'
+import PhysicObject from './PhysicObject'
 
 interface FloorProps {
-  onBody?: (evt: number) => void
+  width?: number
+  // onBody?: (evt: number) => void
 }
 
 @Component({
   name: 'e-Floor'
 })
-export default class Floor extends GameObject<FloorProps> {
+export default class Floor extends PhysicObject<FloorProps> {
   body: any = null
   shape: any = null
 
-  start() {
-    if (this.engine) {
-      this.shape = new Box2D.b2EdgeShape()
-      this.shape.Set(new Box2D.b2Vec2(-40.0, 0.0), new Box2D.b2Vec2(40.0, 0.0))
-      let bd = new Box2D.b2BodyDef()
-      const body = (this.body = this.engine!.world.CreateBody(bd))
-      body.CreateFixture(this.shape, 0.0)
+  @Prop({ default: 50 })
+  width!: number
 
-      this.$emit('body', body.ptr)
-    }
+  buildShape(engine) {
+    const shape = new Box2D.b2EdgeShape()
+    shape.Set(
+      new Box2D.b2Vec2(-this.width, 0.0),
+      new Box2D.b2Vec2(this.width, 0.0)
+    )
+    return shape
   }
 
-  update(dt: number) {}
+  buildBody(engine) {
+    let bd = new Box2D.b2BodyDef()
+    return engine.world.CreateBody(bd)
+  }
 }

@@ -19,17 +19,21 @@ interface PhysicObjectProps {
   onCollisionExit?: (body: any) => void
   onCollisionEnter?: (body: any) => void
   onCollisionStay?: (body: any) => void
+
+  listen?: true
 }
 
 @Component({
   name: 'e-PhysicObject'
 })
-export default class PhysicObject<TProp>
+export default class PhysicObject<TProp = {}>
   extends GameObject<PhysicObjectProps & TProp>
   implements PhysicObjectProps {
   body: any = null
   shape: any = null
 
+  @Prop({ default: false })
+  listen!: true
   @Prop({ default: true })
   awake!: boolean
   @Prop({ default: true })
@@ -81,6 +85,14 @@ export default class PhysicObject<TProp>
 
       if (body && shape) {
         this.updateFixture()
+
+        if (this.initialVelocity) {
+          this.body.SetLinearVelocity(
+            new Box2D.b2Vec2(this.initialVelocity.x, this.initialVelocity)
+          )
+        }
+
+        this.body.SetTransform(new Box2D.b2Vec2(this.x, this.y), this.angle)
       }
     }
   }
@@ -94,24 +106,20 @@ export default class PhysicObject<TProp>
     this.body.CreateFixture(this.shape, this.density)
     this.body.SetLinearDamping(this.linearDamping)
     this.body.SetAngularDamping(this.angularDamping)
-    // if (this.initialVelocity) {
-    //   this.body.SetLinearVelocity(new Box2D.b2Vec2(this.initialVelocity.x, this.initialVelocity))
-    // }
     this.body.SetAwake(+this.awake)
     this.body.SetActive(+this.active)
   }
 
   update(dt: number) {
-    if (this.onCollisionEnter || this.onCollisionExit) {
+    if (this.listen) {
       let edge = this.body.GetContactList()
       let list = JSON.parse(JSON.stringify(this.collisions))
 
       Object.values(list).forEach((s: any) => (s.status = Contacts.Exit))
 
-      while (edge.get_other().ptr > 0) {
+      while (edge.ptr > 0) {
         const body = edge.get_other()
         const ptr = body.ptr
-        console.log(edge.ptr, ptr)
 
         if (typeof list[ptr] === 'undefined') {
           list[ptr] = { body, status: Contacts.Enter }
@@ -121,11 +129,21 @@ export default class PhysicObject<TProp>
 
         edge = edge.get_next()
       }
+
+      for (let ptr in list) {
+        if (list[ptr].status === Contacts.Exit) {
+          this.$emit('collisionExit', list[ptr].body)
+          delete list[ptr]
+        } else if (list[ptr].status === Contacts.Enter) {
+          this.$emit('collisionEnter', list[ptr].body)
+        }
+      }
+      this.collisions = list
     }
   }
 
-  destoy() {
-    this.engine!.box2d.destroy(this.body)
-    this.engine!.box2d.destroy(this.shape)
+  end() {
+    console.log('destroy body')
+    this.engine!.world.DestroyBody(this.body)
   }
 }
