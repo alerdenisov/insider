@@ -66,7 +66,7 @@ export default class Engine extends TsxComponent<EngineProps>
   onKeyUp(evt: KeyboardEvent) {}
 
   mounted() {
-    this.box2d = window.Box2D
+    this.box2d = Box2D
     // const Box2D = Box2D || {}
     if (this.box2d) {
       this.init()
