@@ -1,7 +1,4 @@
-import { Vue, Component, Watch, Prop } from 'nuxt-property-decorator'
-import { TsxComponent } from '~/types'
-import World from './World'
-import { CreateElement } from 'vue'
+import { Component, Prop } from 'nuxt-property-decorator'
 import GameObject from './GameObject'
 
 interface BoxProps {
@@ -41,4 +38,9 @@ export default class Box extends GameObject<BoxProps> implements BoxProps {
   }
 
   update(dt: number) {}
+
+  destoy() {
+    this.engine!.box2d.destroy(this.body)
+    this.engine!.box2d.destroy(this.shape)
+  }
 }

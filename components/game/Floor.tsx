@@ -1,16 +1,14 @@
-import { Vue, Component, Watch, Prop } from 'nuxt-property-decorator'
-import { TsxComponent } from '~/types'
-import World from './World'
-import { CreateElement } from 'vue'
+import { Component } from 'nuxt-property-decorator'
 import GameObject from './GameObject'
 
-interface FloorProps {}
+interface FloorProps {
+  onBody?: (evt: number) => void
+}
 
 @Component({
   name: 'e-Floor'
 })
-export default class Floor extends GameObject<FloorProps>
-  implements FloorProps {
+export default class Floor extends GameObject<FloorProps> {
   body: any = null
   shape: any = null
 
@@ -21,6 +19,8 @@ export default class Floor extends GameObject<FloorProps>
       let bd = new Box2D.b2BodyDef()
       const body = (this.body = this.engine!.world.CreateBody(bd))
       body.CreateFixture(this.shape, 0.0)
+
+      this.$emit('body', body.ptr)
     }
   }
 

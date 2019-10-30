@@ -14,7 +14,10 @@ module.exports = {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap&subset=cyrillic", type: "text/css" }
+    ],
     script: [
       { src: '/box2d/embox2d-noclosure.min.js' },
       { src: '/box2d/embox2d-helpers.js' },
@@ -39,7 +42,9 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: [
+    { src: '~/plugins/bem.plugin.ts' }
+  ],
   /*
    ** Nuxt.js dev-modules
    */

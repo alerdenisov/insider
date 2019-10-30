@@ -1,7 +1,7 @@
-import { Vue, Component, Prop, Watch } from 'nuxt-property-decorator'
+import { Vue, Component, Prop, Watch, PropSync } from 'nuxt-property-decorator'
 import { CreateElement } from 'vue'
 import { TsxComponent } from '~/types'
-import World from '~/components/game/World'
+import Engine from '~/components/game/World'
 import Handle from '~/components/game/Handle'
 import Box from '~/components/game/Box'
 import Player from '~/components/game/Player'
@@ -31,12 +31,18 @@ enum Keys {
 })
 export default class Game extends Vue {
   worldSize: { x: number; y: number } = { x: 0, y: 0 }
+
   boxes: { id: string; w: number }[] = []
   current: number = Date.now()
+
+  score: number = 0
+  highscore: number = 0
 
   next: number = 0
   left: 1 | 0 = 0
   right: 1 | 0 = 0
+
+  floorPtr: number = 0
 
   get move(): -1 | 0 | 1 {
     return (-this.left + this.right) as any
@@ -54,8 +60,10 @@ export default class Game extends Vue {
 
   update() {
     const dt = Math.min(1000 / 60, Date.now() - this.current)
+    this.score += dt
     this.current = Date.now()
-    ;(this.$refs.world as World).update(dt)
+    const engine = this.$refs.engine as Engine
+    engine.update(dt)
 
     if (this.next <= 0) {
       this.boxes.push({
@@ -65,7 +73,7 @@ export default class Game extends Vue {
         w: ~~(Math.random() * 300)
       })
 
-      this.next = 1000 + Math.random() * 5000
+      this.next = 1500 + Math.random() * 500
     }
 
     this.next -= dt
@@ -103,17 +111,83 @@ export default class Game extends Vue {
     }
   }
 
+  end() {
+    if (this.highscore < this.score) this.highscore = this.score
+
+    this.score = 0
+    const engine = this.$refs.engine as Engine
+    this.boxes.splice(0, this.boxes.length)
+    this.$nextTick(() => engine.resetScene())
+  }
+
+  get view() {
+    let x = 0
+    let y = this.worldSize.y * 0.4
+    return { x, y }
+  }
+
+  get zoom() {
+    const w = this.worldSize.x / 50
+    const h = this.worldSize.y / 35
+    return Math.min(w, h)
+  }
+
   render(h: CreateElement) {
     return (
-      <div>
-        <World width={this.worldSize.x} height={this.worldSize.y} ref="world">
-          <Handle />
+      <div {...this.$bem()}>
+        <Scoreboard
+          {...this.$bem('scoreboard')}
+          score={this.score}
+          highscore={this.highscore}
+        />
+        <Engine
+          width={this.worldSize.x}
+          height={this.worldSize.y}
+          ref="engine"
+          zoom={this.zoom}
+          view={this.view}
+        >
+          <Handle floorPtr={this.floorPtr} onCollide={this.end.bind(this)} />
           {this.boxes.map((box) => (
             <Box key={box.id} weight={box.w} />
           ))}
           <Player move={this.move} ref="player" />
-          <Floor />
-        </World>
+          <Floor onBody={(ptr) => (this.floorPtr = ptr)} />
+        </Engine>
+      </div>
+    )
+  }
+}
+
+export interface ScoreboardProps {
+  score: number
+  highscore: number
+}
+@Component({
+  name: 'e-scoreboard'
+})
+export class Scoreboard extends TsxComponent<ScoreboardProps>
+  implements ScoreboardProps {
+  @Prop({ required: true })
+  score!: number
+  @Prop({ required: true })
+  highscore!: number
+
+  get displayHighscore() {
+    return ~~(this.highscore / 100)
+  }
+
+  get displayScore() {
+    return ~~(this.score / 100)
+  }
+
+  render(h: CreateElement) {
+    return (
+      <div {...this.$bem()}>
+        <span {...this.$bem('current')}>{this.displayScore}</span>
+        {this.displayHighscore && (
+          <span {...this.$bem('highscore')}>{this.displayHighscore}</span>
+        )}
       </div>
     )
   }

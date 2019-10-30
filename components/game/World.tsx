@@ -10,9 +10,10 @@ const e_pairBit = 0x0008
 const e_centerOfMassBit = 0x0010
 const DEFINED: any = null
 
-export interface WorldProps {
+export interface EngineProps {
   width: number
   height: number
+  zoom: number
 
   view?: { x: number; y: number }
 
@@ -21,16 +22,18 @@ export interface WorldProps {
 }
 
 @Component({
-  name: 'e-world'
+  name: 'e-engine'
 })
-export default class World extends TsxComponent<WorldProps>
-  implements WorldProps {
+export default class Engine extends TsxComponent<EngineProps>
+  implements EngineProps {
   @Prop({ required: true })
   width!: number
   @Prop({ required: true })
   height!: number
   @Prop({ default: () => ({ x: 0, y: 0 }) })
   view!: { x: number; y: number }
+  @Prop({ required: true })
+  zoom!: number
   @Prop({ default: false })
   pause!: true
   @Prop({ default: false })
@@ -89,13 +92,16 @@ export default class World extends TsxComponent<WorldProps>
     // bubbleUp('keyup')
 
     this.debugDraw = getCanvasDebugDraw(this.context)
-    this.debugDraw.SetFlags(
-      e_shapeBit | e_aabbBit | e_centerOfMassBit | e_jointBit | e_pairBit
-    )
+    this.debugDraw.SetFlags(e_shapeBit)
 
     this.createWorld()
     this.createScene()
     this.resize()
+  }
+
+  resetScene() {
+    this.createWorld()
+    this.items.forEach((i) => i.start())
   }
 
   createWorld() {
@@ -144,8 +150,8 @@ export default class World extends TsxComponent<WorldProps>
     this.context.save()
     this.context.translate(this.translate[0], this.translate[1])
     this.context.scale(1, -1)
-    this.context.scale(12, 12)
-    this.context.lineWidth /= 12
+    this.context.scale(this.zoom, this.zoom)
+    this.context.lineWidth /= this.zoom
 
     drawAxes(this.context)
     this.context.fillStyle = 'rgb(255,255,0)'
@@ -168,8 +174,13 @@ export default class World extends TsxComponent<WorldProps>
   }
   render(h: CreateElement) {
     return (
-      <div>
-        <canvas ref="canvas" width="800" height="650" />
+      <div {...this.$bem()}>
+        <canvas
+          ref="canvas"
+          width="800"
+          height="650"
+          {...this.$bem('canvas')}
+        />
         {this.$slots.default}
       </div>
     )

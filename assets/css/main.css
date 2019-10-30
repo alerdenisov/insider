@@ -12,3 +12,20 @@ body {
   @apply text-indigo-darkest;
   min-height: 100vh;
 }
+
+
+.p-game {}
+
+.e-engine {}
+
+.e-scoreboard {
+  @apply absolute top-0 w-full text-center flex flex-col;
+
+  &__current {
+    @apply text-white text-xl3 font-semibold;
+  }
+
+  &__highscore {
+    @apply text-white text-xl font-semibold;
+  }
+}

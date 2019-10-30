@@ -1,7 +1,4 @@
-import { Vue, Component, Watch, Prop } from 'nuxt-property-decorator'
-import { TsxComponent } from '~/types'
-import World from './World'
-import { CreateElement } from 'vue'
+import { Component, Prop } from 'nuxt-property-decorator'
 import GameObject from './GameObject'
 
 interface PlayerProps {
