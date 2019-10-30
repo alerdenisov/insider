@@ -2,6 +2,7 @@ import { Vue, Component, Prop, Watch } from 'nuxt-property-decorator'
 import { CreateElement } from 'vue'
 import { TsxComponent } from '~/types'
 import World from '~/components/game/World'
+import Handle from '~/components/game/Handle'
 
 @Component({
   name: 'p-game'
@@ -23,7 +24,7 @@ export default class Game extends Vue {
     return (
       <div>
         <World width={this.worldSize.x} height={this.worldSize.y}>
-          <span>test</span>
+          <Handle />
         </World>
       </div>
     )

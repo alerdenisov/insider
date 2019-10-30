@@ -1,5 +1,4 @@
 var context;
-var _box2D = Box2D();
 
 function drawAxes(ctx) {
     ctx.strokeStyle = 'rgb(192,0,0)';
@@ -15,7 +14,7 @@ function drawAxes(ctx) {
 }
 
 function setColorFromDebugDrawCallback(color) {
-    var col = _box2D.wrapPointer(color, _box2D.b2Color);
+    var col = Box2D.wrapPointer(color, Box2D.b2Color);
     var red = (col.get_r() * 255) | 0;
     var green = (col.get_g() * 255) | 0;
     var blue = (col.get_b() * 255) | 0;
@@ -25,8 +24,8 @@ function setColorFromDebugDrawCallback(color) {
 }
 
 function drawSegment(vert1, vert2) {
-    var vert1V = _box2D.wrapPointer(vert1, _box2D.b2Vec2);
-    var vert2V = _box2D.wrapPointer(vert2, _box2D.b2Vec2);
+    var vert1V = Box2D.wrapPointer(vert1, Box2D.b2Vec2);
+    var vert2V = Box2D.wrapPointer(vert2, Box2D.b2Vec2);
     context.beginPath();
     context.moveTo(vert1V.get_x(), vert1V.get_y());
     context.lineTo(vert2V.get_x(), vert2V.get_y());
@@ -36,7 +35,7 @@ function drawSegment(vert1, vert2) {
 function drawPolygon(vertices, vertexCount, fill) {
     context.beginPath();
     for (tmpI = 0; tmpI < vertexCount; tmpI++) {
-        var vert = _box2D.wrapPointer(vertices + (tmpI * 8), _box2D.b2Vec2);
+        var vert = Box2D.wrapPointer(vertices + (tmpI * 8), Box2D.b2Vec2);
         if (tmpI == 0)
             context.moveTo(vert.get_x(), vert.get_y());
         else
@@ -49,8 +48,8 @@ function drawPolygon(vertices, vertexCount, fill) {
 }
 
 function drawCircle(center, radius, axis, fill) {
-    var centerV = _box2D.wrapPointer(center, _box2D.b2Vec2);
-    var axisV = _box2D.wrapPointer(axis, _box2D.b2Vec2);
+    var centerV = Box2D.wrapPointer(center, Box2D.b2Vec2);
+    var axisV = Box2D.wrapPointer(axis, Box2D.b2Vec2);
 
     context.beginPath();
     context.arc(centerV.get_x(), centerV.get_y(), radius, 0, 2 * Math.PI, false);
@@ -69,8 +68,8 @@ function drawCircle(center, radius, axis, fill) {
     }
 }
 
-function drawTransform(transform) {
-    var trans = _box2D.wrapPointer(transform, _box2D.b2Transform);
+function drawTransform(context, transform) {
+    var trans = Box2D.wrapPointer(transform, Box2D.b2Transform);
     var pos = trans.get_p();
     var rot = trans.get_q();
 
@@ -84,8 +83,9 @@ function drawTransform(transform) {
 }
 
 function getCanvasDebugDraw(ctx) {
+    console.log(ctx);
     context = ctx;
-    var debugDraw = new _box2D.JSDraw();
+    var debugDraw = new Box2D.JSDraw();
 
     debugDraw.DrawSegment = function (vert1, vert2, color) {
         setColorFromDebugDrawCallback(color);
@@ -104,7 +104,7 @@ function getCanvasDebugDraw(ctx) {
 
     debugDraw.DrawCircle = function (center, radius, color) {
         setColorFromDebugDrawCallback(color);
-        var dummyAxis = _box2D.b2Vec2(0, 0);
+        var dummyAxis = Box2D.b2Vec2(0, 0);
         drawCircle(center, radius, dummyAxis, false);
     };
 
@@ -114,7 +114,7 @@ function getCanvasDebugDraw(ctx) {
     };
 
     debugDraw.DrawTransform = function (transform) {
-        drawTransform(transform);
+        drawTransform(context, transform);
     };
 
     return debugDraw;

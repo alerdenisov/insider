@@ -14,11 +14,11 @@ export default class GameObject<TProps = {}>
   engine: World | null = null
 
   findParent(node: World) {
-    if (node.world) {
+    if (!!node.world) {
       return node
     }
 
-    if (node.$parent) {
+    if (!!node.$parent) {
       return this.findParent(node.$parent as World)
     }
 
@@ -26,10 +26,12 @@ export default class GameObject<TProps = {}>
   }
 
   mounted() {
-    this.engine = this.findParent(this.$parent as World)
-    if (this.engine) {
-      this.engine.register(this)
-    }
+    this.$nextTick(() => {
+      this.engine = this.findParent(this.$parent as World)
+      if (this.engine) {
+        this.engine.register(this)
+      }
+    })
   }
 
   beforeDestroy() {
@@ -40,5 +42,7 @@ export default class GameObject<TProps = {}>
     return <span />
   }
 
+  destroy() {}
+  start() {}
   update() {}
 }

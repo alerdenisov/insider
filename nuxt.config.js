@@ -17,6 +17,7 @@ module.exports = {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     script: [
       { src: '/box2d/Box2D_v2.2.1_min.js' },
+      { src: '/box2d/helpers/embox2d-helpers.js' },
       { src: '/box2d/helpers/embox2d-html5canvas-debugDraw.js' }
     ]
   },

@@ -7,10 +7,24 @@ declare global {
   function drawPolygon(vertices, vertexCount, fill): void
   function drawCircle(center, radius, axis, fill): void
   function drawTransform(transform): void
-  function getCanvasDebugDraw(): void
+  function getCanvasDebugDraw(ctx): void
+
   type box2D = typeof Box2D
+
   type LONG = number //todo int64?
+  function using(ns, pattern)
+  function copyVec2(vec)
+  function scaleVec2(vec, scale)
+  function scaledVec2(vec, scale)
+  function createChainShape(vertices, closedLoop)
+  function createPolygonShape(vertices)
+  function createRandomPolygonShape(radius)
+
   namespace Box2D {
+    const b2_staticBody: number
+    const b2_kinematicBody: number
+    const b2_dynamicBody: number
+
     function destroy(obj: any): void
     // [NoDelete]
     // \s+(\w+) (\w+)\(((\w+) (\w+),?)*\);
@@ -349,12 +363,6 @@ declare global {
     //  SetUserData(any data) : void;
     //  GetWorld() : b2World;
     //  Dump() : void;
-    // };
-
-    // enum b2BodyType {
-    //   "b2_staticBody",
-    //   "b2_kinematicBody",
-    //   "b2_dynamicBody"
     // };
 
     // class b2BodyDef {

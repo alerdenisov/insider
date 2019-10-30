@@ -2,6 +2,7 @@ import { Component, Prop, Watch } from 'nuxt-property-decorator'
 import { CreateElement } from 'vue'
 import { TsxComponent } from '~/types'
 import GameObject from './GameObject'
+import { on } from 'cluster'
 
 const requestAnimFrame = (function() {
   return (
@@ -49,7 +50,7 @@ export default class World extends TsxComponent<WorldProps>
   @Prop({ default: false })
   nodraw!: true
 
-  objects: GameObject[] = []
+  objects: { [key: string]: GameObject } = {}
 
   get translate() {
     return [
@@ -76,12 +77,16 @@ export default class World extends TsxComponent<WorldProps>
   onKeyUp(evt: KeyboardEvent) {}
 
   mounted() {
-    this.box2d = window.Box2D()
+    this.box2d = window.Box2D
     // const Box2D = Box2D || {}
     if (this.box2d) {
       this.init()
       this.update()
     }
+  }
+
+  get items() {
+    return Object.values(this.objects)
   }
 
   init() {
@@ -98,8 +103,11 @@ export default class World extends TsxComponent<WorldProps>
     bubbleUp('keyDown')
     bubbleUp('keyUp')
 
-    this.debugDraw = getCanvasDebugDraw()
-    this.debugDraw.SetFlags(e_shapeBit)
+    console.log('context', this.context)
+    this.debugDraw = getCanvasDebugDraw(this.context)
+    this.debugDraw.SetFlags(
+      e_shapeBit | e_aabbBit | e_centerOfMassBit | e_jointBit | e_pairBit
+    )
 
     this.createWorld()
     this.createScene()
@@ -119,18 +127,27 @@ export default class World extends TsxComponent<WorldProps>
 
   createScene() {}
 
-  unregister(obj: GameObject) {
+  register(obj: GameObject) {
     console.log(obj)
-    this.objects.push(obj)
+    const key = obj.$vnode.toString()
+    if (typeof this.objects[key] === 'undefined') {
+      obj.start()
+      this.$set(this.objects, key, obj)
+    }
   }
 
-  register(obj: GameObject) {
-    this.objects.filter((o) => o !== obj)
+  unregister(obj: GameObject) {
+    const key = obj.$vnode.toString()
+    if (typeof this.objects[key] !== 'undefined') {
+      obj.destroy()
+      this.$delete(this.objects, key)
+    }
   }
 
   @Watch('width')
   @Watch('height')
   resize() {
+    console.log('resize')
     this.canvas.width = this.width
     this.canvas.height = this.height
     this.canvasOffset.x = this.canvas!.width / 2
