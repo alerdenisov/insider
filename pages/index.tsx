@@ -100,8 +100,6 @@ export default class Game extends Vue {
   onPress(evt: KeyboardEvent) {
     console.log(evt.key, evt.keyCode)
     switch (evt.keyCode) {
-      case Keys.Space:
-        ;(this.$refs.player as Player).shake()
       case Keys.Left:
         this.left = 1
         break
